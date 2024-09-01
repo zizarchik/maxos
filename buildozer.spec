@@ -3,6 +3,12 @@
 # (str) Title of your application
 title = MaxOS
 
+# (list) List of site packages to add to sys.path
+#extra_python_libs = 
+
+# (bool) Whether to accept all licenses automatically
+accept_licenses = True
+
 # (str) Package name
 package.name = maxos_app
 
