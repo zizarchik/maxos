@@ -47,10 +47,12 @@ jobs:
       - name: Install Android SDK
         run: |
           sudo apt-get install -y libncurses5 libtinfo5 libtinfo-dev zlib1g-dev openjdk-8-jdk
-          wget https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip
-          unzip commandlinetools-linux-7302050_latest.zip -d $HOME/sdk
-          yes | $HOME/sdk/cmdline-tools/bin/sdkmanager --licenses
-          yes | $HOME/sdk/cmdline-tools/bin/sdkmanager --update
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+          unzip commandlinetools-linux-8512546_latest.zip -d $HOME/android-sdk/cmdline-tools
+          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --update
 
       # Step 7: Build the APK
       - name: Build APK with Buildozer
