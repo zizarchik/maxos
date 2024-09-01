@@ -60,26 +60,18 @@ jobs:
           mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
 
           # Accept licenses interactively
-          echo "yes" | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --update
 
           # Install specific build-tools version and other components
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "build-tools;29.0.3" "platforms;android-29" "extras;google;m2repository"
 
-      # Step 8: Verify AIDL installation
-      - name: Check for AIDL
-        run: |
-          if [ ! -f "$HOME/android-sdk/build-tools/29.0.3/aidl" ]; then
-            echo "AIDL not found in the expected location"
-            exit 1
-          fi
-
-      # Step 9: Build the APK with Buildozer
+      # Step 8: Build the APK with Buildozer
       - name: Build APK with Buildozer
         run: |
           buildozer android debug
 
-      # Step 10: Upload the APK as an artifact
+      # Step 9: Upload the APK as an artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
