@@ -60,10 +60,10 @@ jobs:
           mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
 
           # Accept licenses interactively
-          echo "yes" | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --update
+          echo "y" | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --update
 
-          # Install build-tools and platform-tools
+          # Install necessary SDK components
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "build-tools;30.0.3" "platforms;android-30" "extras;google;m2repository"
 
       # Step 8: Verify AIDL installation
@@ -74,7 +74,7 @@ jobs:
             exit 1
           fi
 
-      # Step 9: Build the APK
+      # Step 9: Build the APK with Buildozer
       - name: Build APK with Buildozer
         run: |
           buildozer android debug
