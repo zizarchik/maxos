@@ -60,16 +60,16 @@ jobs:
           mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
 
           # Accept licenses interactively
-          echo "y" | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          echo "yes" | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --update
 
-          # Install necessary SDK components
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "build-tools;30.0.3" "platforms;android-30" "extras;google;m2repository"
+          # Install specific build-tools version and other components
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "build-tools;29.0.3" "platforms;android-29" "extras;google;m2repository"
 
       # Step 8: Verify AIDL installation
       - name: Check for AIDL
         run: |
-          if [ ! -f "$HOME/android-sdk/build-tools/30.0.3/aidl" ]; then
+          if [ ! -f "$HOME/android-sdk/build-tools/29.0.3/aidl" ]; then
             echo "AIDL not found in the expected location"
             exit 1
           fi
