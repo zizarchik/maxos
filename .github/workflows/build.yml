@@ -1,80 +1,83 @@
 name: CI
 
 on:
+
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+
+    branches: [ main ]
+
+
 
 jobs:
-  build-apk:
+
+  build:
+
     runs-on: ubuntu-latest
 
+
+
     steps:
-      # Step 1: Checkout the code
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      # Step 2: Set up Python 3.8
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.8
+      - uses: actions/checkout@v4
 
-      # Step 3: Cache pip packages to speed up builds
-      - name: Cache pip
+
+
+      # used to cache dependencies with a timeout
+
+      - name: Get Date
+
+        id: get-date
+
+        run: |
+
+          echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
+
+        shell: bash
+
+
+
+      - name: Cache Buildozer global directory
+
         uses: actions/cache@v4
+
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
 
-      # Step 4: Install dependencies
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
+          path: .buildozer_global
 
-      # Step 5: Install Buildozer
-      - name: Install Buildozer
-        run: |
-          pip install buildozer
+          key: buildozer-global-${{ hashFiles('buildozer.spec') }} # Replace with your path
 
-      # Step 6: Clean previous builds
-      - name: Clean previous builds
-        run: |
-          buildozer appclean
-          rm -rf ~/.buildozer
 
-      # Step 7: Install Android SDK dependencies
-      - name: Install Android SDK
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libncurses5 libtinfo5 libtinfo-dev zlib1g-dev openjdk-8-jdk
-          mkdir -p $HOME/android-sdk/cmdline-tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
-          unzip commandlinetools-linux-8512546_latest.zip -d $HOME/android-sdk/cmdline-tools
-          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
 
-          # Accept licenses interactively
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --update
+      - uses: actions/cache@v4
 
-          # Install specific build-tools version and other components
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "build-tools;29.0.3" "platforms;android-29" "extras;google;m2repository"
+        with:
 
-      # Step 8: Build the APK with Buildozer
-      - name: Build APK with Buildozer
-        run: |
-          buildozer android debug
+          path: .buildozer
 
-      # Step 9: Upload the APK as an artifact
-      - name: Upload APK
+          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}
+
+
+
+      - name: Build with Buildozer
+
+        uses: ArtemSBulgakov/buildozer-action@v4
+
+        id: buildozer
+
+        with:
+
+          command: buildozer android debug
+
+          buildozer_version: master
+
+
+
+      - name: Upload artifacts
+
         uses: actions/upload-artifact@v4
+
         with:
-          name: MyApp-debug.apk
-          path: |
-            ./bin/*.apk
+
+          name: package
+
+          path: ${{ steps.buildozer.outputs.filename }}
