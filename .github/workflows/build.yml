@@ -52,22 +52,24 @@ jobs:
       # Step 7: Install Android SDK dependencies
       - name: Install Android SDK
         run: |
+          sudo apt-get update
           sudo apt-get install -y libncurses5 libtinfo5 libtinfo-dev zlib1g-dev openjdk-8-jdk
           mkdir -p $HOME/android-sdk/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
           unzip commandlinetools-linux-8512546_latest.zip -d $HOME/android-sdk/cmdline-tools
           mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
 
-          # Accept licenses
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
+          # Accept licenses interactively
+          echo "yes" | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --update
 
-          # Install build-tools and platform-tools, ensuring all dependencies are included
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "build-tools;35.0.0" "platforms;android-30" "extras;google;m2repository" "tools"
+          # Install build-tools and platform-tools
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "build-tools;30.0.3" "platforms;android-30" "extras;google;m2repository"
 
-      # Step 8: Check for AIDL
+      # Step 8: Verify AIDL installation
       - name: Check for AIDL
         run: |
-          if [ ! -f "$HOME/android-sdk/build-tools/35.0.0/aidl" ]; then
+          if [ ! -f "$HOME/android-sdk/build-tools/30.0.3/aidl" ]; then
             echo "AIDL not found in the expected location"
             exit 1
           fi
